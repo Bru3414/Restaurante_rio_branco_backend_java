@@ -1,5 +1,6 @@
 package br.com.RestauranteRioBranco.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.RestauranteRioBranco.dto.AccessDTO;
+import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.AuthenticationDTO;
 import br.com.RestauranteRioBranco.dto.UserDTO;
+import br.com.RestauranteRioBranco.entity.AddressEntity;
+import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.Role;
 import br.com.RestauranteRioBranco.entity.UserEntity;
+import br.com.RestauranteRioBranco.repository.AddressRepository;
+import br.com.RestauranteRioBranco.repository.CustomerRepository;
 import br.com.RestauranteRioBranco.repository.RoleRepository;
 import br.com.RestauranteRioBranco.repository.UserRepository;
 import br.com.RestauranteRioBranco.security.jwt.JwtUtils;
@@ -40,6 +46,10 @@ public class AuthService {
 	
 	@Autowired
 	private PasswordEncoder encoder;
+	
+	@Autowired
+	private CustomerRepository customerRepository;
+	
 
 	public AccessDTO login(AuthenticationDTO authDTO) {
 		
@@ -70,7 +80,7 @@ public class AuthService {
 		
 	}
 	
-	public AccessDTO signup(UserDTO user) {
+	public AccessDTO signup(UserDTO user, AddressDTO address, String phone) {
 		if (userRepository.existsByEmail(user.getEmail())) {
 			throw new RuntimeException("Error: Email já cadastrado");
 		}
@@ -91,8 +101,20 @@ public class AuthService {
 		roles.add(role);
 		userEntity.setRoles(roles);
 		
-		userRepository.save(userEntity);
+		CustomerEntity customer = new CustomerEntity();
+		customer.setId(null);
+		customer.setCart(null);
+		customer.setUser(userEntity);
+		customer.setPhone(phone);
+		AddressEntity addressEntity = new AddressEntity(address);
+		addressEntity.setId(null);
+		addressEntity.setCustomer(customer);
 		
+		List<AddressEntity> list = new ArrayList<>();
+		list.add(addressEntity);
+		customer.setAddress(list);
+		customerRepository.save(customer);
+			
 		AuthenticationDTO authDTO = new AuthenticationDTO();
 		authDTO.setUsername(user.getEmail());
 		authDTO.setPassword(user.getPassword());

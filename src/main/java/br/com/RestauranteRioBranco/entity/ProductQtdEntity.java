@@ -1,29 +1,36 @@
-package br.com.RestauranteRioBranco.dto;
+package br.com.RestauranteRioBranco.entity;
 
 import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
 
-import br.com.RestauranteRioBranco.entity.CartEntity;
-import br.com.RestauranteRioBranco.entity.ProductEntity;
-import br.com.RestauranteRioBranco.entity.ProductQtdEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-public class ProductQtdDTO {
+import br.com.RestauranteRioBranco.dto.ProductQtdDTO;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "TB_PRODUCT_QTD")
+public class ProductQtdEntity {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
+	
+	@OneToOne
+	@JoinColumn(name = "product_id")
 	private ProductEntity product;
 	
+	@Column(nullable = false, length = 2)
 	private Integer quantity;
 	
+	@ManyToOne
+	@JoinColumn(name = "cart_id", nullable = false)
+	@JsonBackReference
 	private CartEntity cart;
 	
-	public ProductQtdDTO(ProductQtdEntity product) {
+	public ProductQtdEntity (ProductQtdDTO product) {
 		BeanUtils.copyProperties(product, this);
-	}
-	
-	public ProductQtdDTO() {
-		
 	}
 
 	public Long getId() {
@@ -60,7 +67,7 @@ public class ProductQtdDTO {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(product);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -71,8 +78,8 @@ public class ProductQtdDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ProductQtdDTO other = (ProductQtdDTO) obj;
-		return Objects.equals(product, other.product);
+		ProductQtdEntity other = (ProductQtdEntity) obj;
+		return Objects.equals(id, other.id);
 	}
 	
 }

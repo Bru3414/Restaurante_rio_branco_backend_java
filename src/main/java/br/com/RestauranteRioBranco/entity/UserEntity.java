@@ -24,14 +24,8 @@ public class UserEntity {
 	@Column(nullable = false, length = 50, unique = true)
 	private String email;
 	
-	@Column(nullable = false, length = 11)
-	private String phone;
-	
 	@Column(nullable = false)
 	private String password;
-	
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	private List<AddressEntity> address;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", 
@@ -63,28 +57,12 @@ public class UserEntity {
 		this.email = email;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public List<AddressEntity> getAddress() {
-		return address;
-	}
-
-	public void setAddress(List<AddressEntity> address) {
-		this.address = address;
 	}
 
 	public Long getId() {

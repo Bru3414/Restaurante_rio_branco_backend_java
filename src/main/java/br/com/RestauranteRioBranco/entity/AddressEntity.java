@@ -31,8 +31,8 @@ public class AddressEntity {
 	private String city;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private UserEntity user;
+	@JoinColumn(name = "customer_id", nullable = false)
+	private CustomerEntity customer;
 	
 	public AddressEntity(AddressDTO address) {
 		BeanUtils.copyProperties(address, this);
@@ -91,12 +91,12 @@ public class AddressEntity {
 		this.id = id;
 	}
 
-	public UserEntity getUser() {
-		return user;
+	public CustomerEntity getCustomer() {
+		return customer;
 	}
 
-	public void setUser(UserEntity user) {
-		this.user = user;
+	public void setCustomer(CustomerEntity customer) {
+		this.customer = customer;
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.beans.BeanUtils;
 
 import br.com.RestauranteRioBranco.entity.AddressEntity;
+import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.UserEntity;
 
 public class AddressDTO {
@@ -21,8 +22,19 @@ public class AddressDTO {
 
 	private String city;
 	
-	private UserEntity user;
+	private CustomerEntity customer;
 	
+	public AddressDTO(String address, String number, String bairro, String complement, String city,
+			CustomerEntity customer) {
+		super();
+		this.address = address;
+		this.number = number;
+		this.bairro = bairro;
+		this.complement = complement;
+		this.city = city;
+		this.customer = customer;
+	}
+
 	public AddressDTO(AddressEntity address) {
 		BeanUtils.copyProperties(address, this);
 	}
@@ -79,12 +91,12 @@ public class AddressDTO {
 		this.id = id;
 	}
 
-	public UserEntity getUser() {
-		return user;
+	public CustomerEntity getCustomer() {
+		return customer;
 	}
 
-	public void setUser(UserEntity user) {
-		this.user = user;
+	public void setCustomer(CustomerEntity customer) {
+		this.customer = customer;
 	}
 
 	@Override

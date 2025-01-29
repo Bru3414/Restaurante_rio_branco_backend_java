@@ -21,25 +21,20 @@ public class UserDetailsImpl implements UserDetails {
 	private String name;
 	
 	private String email;
-	
-	private String phone;
-	
+		
 	@JsonIgnore
 	private String password;
 	
-	private List<AddressEntity> address;
 	
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String name, String email, String phone, String password,
-			List<AddressEntity> address, Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(Long id, String name, String email, String password,
+			Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
-		this.phone = phone;
 		this.password = password;
-		this.address = address;
 		this.authorities = authorities;
 	}
 	
@@ -48,7 +43,7 @@ public class UserDetailsImpl implements UserDetails {
 				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
 				.collect(Collectors.toList());
 		
-		return new UserDetailsImpl(user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getPassword(), user.getAddress(), authorities);
+		return new UserDetailsImpl(user.getId(), user.getName(), user.getEmail(), user.getPassword(), authorities);
 	}
 
 	@Override
@@ -88,22 +83,6 @@ public class UserDetailsImpl implements UserDetails {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public List<AddressEntity> getAddress() {
-		return address;
-	}
-
-	public void setAddress(List<AddressEntity> address) {
-		this.address = address;
 	}
 
 	public void setPassword(String password) {

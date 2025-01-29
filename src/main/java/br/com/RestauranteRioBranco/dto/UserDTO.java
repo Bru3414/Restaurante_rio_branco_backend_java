@@ -19,11 +19,7 @@ public class UserDTO {
 
 	private String email;
 
-	private String phone;
-
 	private String password;
-
-	private List<AddressEntity> address;
 	
 	private Set<Role> roles = new HashSet<>();
 	
@@ -59,28 +55,12 @@ public class UserDTO {
 		this.email = email;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public List<AddressEntity> getAddress() {
-		return address;
-	}
-
-	public void setAddress(List<AddressEntity> address) {
-		this.address = address;
 	}
 
 	public Long getId() {

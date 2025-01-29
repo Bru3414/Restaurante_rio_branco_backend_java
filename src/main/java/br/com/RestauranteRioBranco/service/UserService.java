@@ -27,21 +27,9 @@ public class UserService {
 	
 	public void createUser(UserDTO user) {
 		UserEntity userEntity = new UserEntity(user);
-		AddressDTO addressDTO = new AddressDTO();
-		
-		addressDTO.setAddress(user.getAddress().get(0).getAddress());
-		addressDTO.setNumber(user.getAddress().get(0).getNumber());
-		addressDTO.setBairro(user.getAddress().get(0).getBairro());
-		addressDTO.setComplement(user.getAddress().get(0).getComplement());
-		addressDTO.setCity(user.getAddress().get(0).getCity());
-		AddressEntity addressEntity = new AddressEntity(addressDTO);
 		
 		userEntity.setId(null);
 		userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
-		userEntity.getAddress().add(addressEntity);
-		addressEntity.setId(null);
-		addressEntity.setUser(userRepository.save(userEntity));
-		addressRepository.save(addressEntity);
 	}
 	
 	public void updateUser(UserDTO user) {

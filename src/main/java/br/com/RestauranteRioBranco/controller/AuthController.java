@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.RestauranteRioBranco.dto.AuthenticationDTO;
-import br.com.RestauranteRioBranco.dto.UserDTO;
+import br.com.RestauranteRioBranco.dto.UserAddressRequestDTO;
 import br.com.RestauranteRioBranco.service.AuthService;
 
 @RestController
@@ -26,7 +26,8 @@ public class AuthController {
 	}
 	
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@RequestBody UserDTO user) {
-		return ResponseEntity.ok(authService.signup(user));
+	public ResponseEntity<?> signup(@RequestBody UserAddressRequestDTO userAddressRequest) {
+		return ResponseEntity.ok(authService.signup(userAddressRequest.getUser(), userAddressRequest.getAddress(),
+													userAddressRequest.getPhone()));
 	}
 }
