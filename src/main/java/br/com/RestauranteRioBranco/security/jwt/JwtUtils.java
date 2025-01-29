@@ -1,6 +1,5 @@
 package br.com.RestauranteRioBranco.security.jwt;
 
-import java.nio.charset.MalformedInputException;
 import java.security.Key;
 import java.util.Date;
 

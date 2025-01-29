@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.RestauranteRioBranco.dto.AuthenticationDTO;
+import br.com.RestauranteRioBranco.dto.UserDTO;
 import br.com.RestauranteRioBranco.service.AuthService;
 
 @RestController
@@ -22,5 +23,10 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody AuthenticationDTO authDTO) {
 		return ResponseEntity.ok(authService.login(authDTO));
+	}
+	
+	@PostMapping("/signup")
+	public ResponseEntity<?> signup(@RequestBody UserDTO user) {
+		return ResponseEntity.ok(authService.signup(user));
 	}
 }

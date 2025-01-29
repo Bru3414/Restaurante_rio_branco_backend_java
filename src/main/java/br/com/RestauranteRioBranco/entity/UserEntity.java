@@ -1,7 +1,9 @@
 package br.com.RestauranteRioBranco.entity;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
@@ -30,6 +32,12 @@ public class UserEntity {
 	
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<AddressEntity> address;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_roles", 
+        joinColumns = @JoinColumn(name = "user_id"), 
+        inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
 	
 	public UserEntity(UserDTO user) {
 		BeanUtils.copyProperties(user, this);
@@ -85,6 +93,14 @@ public class UserEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 
 	@Override

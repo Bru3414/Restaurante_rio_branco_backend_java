@@ -1,11 +1,14 @@
 package br.com.RestauranteRioBranco.dto;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
 import br.com.RestauranteRioBranco.entity.AddressEntity;
+import br.com.RestauranteRioBranco.entity.Role;
 import br.com.RestauranteRioBranco.entity.UserEntity;
 
 public class UserDTO {
@@ -22,12 +25,22 @@ public class UserDTO {
 
 	private List<AddressEntity> address;
 	
+	private Set<Role> roles = new HashSet<>();
+	
 	public UserDTO(UserEntity user) {
 		BeanUtils.copyProperties(user, this);
 	}
 	
 	public UserDTO() {
 		
+	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 
 	public String getName() {

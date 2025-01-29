@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.com.RestauranteRioBranco.dto.ProductDTO;
-import br.com.RestauranteRioBranco.utils.enums.Category;
+import br.com.RestauranteRioBranco.utils.enums.ECategory;
 import jakarta.persistence.*;
 
 @Entity
@@ -32,7 +32,7 @@ public class ProductEntity {
 	private Boolean isInMenu;
 	
 	@Column(nullable = false)
-	private Category category;
+	private ECategory category;
 	
 	@ManyToOne
 	@JoinColumn(name = "image_id", nullable = false)
@@ -87,11 +87,11 @@ public class ProductEntity {
 		this.isInMenu = isInMenu;
 	}
 
-	public Category getCategory() {
+	public ECategory getCategory() {
 		return category;
 	}
 
-	public void setCategory(Category category) {
+	public void setCategory(ECategory category) {
 		this.category = category;
 	}
 

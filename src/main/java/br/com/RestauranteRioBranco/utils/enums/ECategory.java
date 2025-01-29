@@ -1,5 +1,5 @@
 package br.com.RestauranteRioBranco.utils.enums;
 
-public enum Category {
+public enum ECategory {
 	MARMITA, BEBIDA
 }

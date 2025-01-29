@@ -6,7 +6,7 @@ import org.springframework.beans.BeanUtils;
 
 import br.com.RestauranteRioBranco.entity.ImageProductEntity;
 import br.com.RestauranteRioBranco.entity.ProductEntity;
-import br.com.RestauranteRioBranco.utils.enums.Category;
+import br.com.RestauranteRioBranco.utils.enums.ECategory;
 
 public class ProductDTO {
 	
@@ -22,7 +22,7 @@ public class ProductDTO {
 	
 	private Boolean isInMenu;
 	
-	private Category category;
+	private ECategory category;
 	
 	public ProductDTO(ProductEntity product) {
 		BeanUtils.copyProperties(product, this);
@@ -80,11 +80,11 @@ public class ProductDTO {
 		this.isInMenu = isInMenu;
 	}
 
-	public Category getCategory() {
+	public ECategory getCategory() {
 		return category;
 	}
 
-	public void setCategory(Category category) {
+	public void setCategory(ECategory category) {
 		this.category = category;
 	}
 

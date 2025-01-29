@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +20,9 @@ public class S3Service {
 	private final AmazonS3 amazonS3;
 	
 	private final String bucket = "resriobranco-images";
-	
-	@Value("${projeto.accessKey}")
-	private String accessKey;
-	
-	@Value("${projeto.secretKey}")
-	private String secretKey;
-	
-	public S3Service() {
+
+	@Autowired
+	public S3Service(@Value("${projeto.accessKey}") String accessKey, @Value("${projeto.secretKey}") String secretKey) {
 		var credentials = new BasicAWSCredentials(accessKey, secretKey);
 		amazonS3 = AmazonS3ClientBuilder
 				.standard()
