@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.RestauranteRioBranco.dto.UserDTO;
 import jakarta.persistence.*;
 
@@ -23,7 +25,7 @@ public class UserEntity {
 	
 	@Column(nullable = false, length = 50, unique = true)
 	private String email;
-	
+		
 	@Column(nullable = false)
 	private String password;
 	

@@ -16,6 +16,10 @@ public class ProductQtdDTO {
 	
 	private Integer quantity;
 	
+	private String obs;
+	
+	private Double price;
+	
 	private CartEntity cart;
 	
 	public ProductQtdDTO(ProductQtdEntity product) {
@@ -24,6 +28,22 @@ public class ProductQtdDTO {
 	
 	public ProductQtdDTO() {
 		
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+	
+	public String getObs() {
+		return obs;
+	}
+
+	public void setObs(String obs) {
+		this.obs = obs;
 	}
 
 	public Long getId() {
@@ -57,10 +77,20 @@ public class ProductQtdDTO {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+	
+	public void addQtd() {
+		setQuantity(quantity + 1);
+		setPrice(product.getPrice() * quantity);
+	}
+	
+	public void diminuiQtd() {
+		setQuantity(quantity - 1);
+		setPrice(product.getPrice() * quantity);
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(product);
+		return Objects.hash(cart, obs, product);
 	}
 
 	@Override
@@ -72,7 +102,8 @@ public class ProductQtdDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		ProductQtdDTO other = (ProductQtdDTO) obj;
-		return Objects.equals(product, other.product);
+		return Objects.equals(cart, other.cart) && Objects.equals(obs, other.obs)
+				&& Objects.equals(product, other.product);
 	}
 	
 }

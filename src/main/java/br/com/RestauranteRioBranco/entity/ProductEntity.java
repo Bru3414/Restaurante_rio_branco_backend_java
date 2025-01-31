@@ -31,12 +31,12 @@ public class ProductEntity {
 	@Column(nullable = false)
 	private Boolean isInMenu;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ECategory category;
 	
 	@ManyToOne
 	@JoinColumn(name = "image_id", nullable = false)
-	@JsonBackReference
 	private ImageProductEntity image;
 	
 	public ProductEntity(ProductDTO product) {

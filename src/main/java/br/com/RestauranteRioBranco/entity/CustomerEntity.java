@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import br.com.RestauranteRioBranco.dto.CustomerDTO;
 import jakarta.persistence.*;
 
@@ -26,8 +28,9 @@ public class CustomerEntity {
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 	private List<AddressEntity> address;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "cart_id")
+	@JsonManagedReference
 	private CartEntity cart;
 	
 	public CustomerEntity(CustomerDTO customer) {

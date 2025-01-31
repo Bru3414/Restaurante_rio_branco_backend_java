@@ -19,6 +19,7 @@ import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.AuthenticationDTO;
 import br.com.RestauranteRioBranco.dto.UserDTO;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
+import br.com.RestauranteRioBranco.entity.CartEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.Role;
 import br.com.RestauranteRioBranco.entity.UserEntity;
@@ -50,9 +51,7 @@ public class AuthService {
 	@Autowired
 	private CustomerRepository customerRepository;
 	
-
-	public AccessDTO login(AuthenticationDTO authDTO) {
-		
+	public UserDetailsImpl BuscaUser(AuthenticationDTO authDTO) {
 		try {
 			//Cria mecanismo de credencial para o Spring
 			UsernamePasswordAuthenticationToken userAuth = 
@@ -64,19 +63,25 @@ public class AuthService {
 			//Busca usuario logado
 			UserDetailsImpl userAuthenticate = (UserDetailsImpl)authentication.getPrincipal();
 			
-			String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
-			
-			List<String> roles = userAuthenticate.getAuthorities().stream().map(item -> item.getAuthority())
-					.collect(Collectors.toList());
-			
-			AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), roles);
-			
-			return accessDTO;
-			
+			return userAuthenticate;
 		}catch(BadCredentialsException e) {
-			//TODO LOGIN OU SENHA INVALIDO
+			throw new BadCredentialsException("Email ou senha inválido");
 		}
-		return null;
+	}
+	
+
+	public AccessDTO login(AuthenticationDTO authDTO) {
+		
+		UserDetailsImpl userAuthenticate = BuscaUser(authDTO);
+			
+		String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
+		
+		List<String> roles = userAuthenticate.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+		
+		AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), roles);
+		
+		return accessDTO;
 		
 	}
 	
@@ -102,8 +107,8 @@ public class AuthService {
 		userEntity.setRoles(roles);
 		
 		CustomerEntity customer = new CustomerEntity();
+		
 		customer.setId(null);
-		customer.setCart(null);
 		customer.setUser(userEntity);
 		customer.setPhone(phone);
 		AddressEntity addressEntity = new AddressEntity(address);
@@ -113,36 +118,25 @@ public class AuthService {
 		List<AddressEntity> list = new ArrayList<>();
 		list.add(addressEntity);
 		customer.setAddress(list);
+		CartEntity cart = new CartEntity();
+		cart.setCustomer(customer);
+		cart.setProducts(null);
+		customer.setCart(cart);
 		customerRepository.save(customer);
 			
 		AuthenticationDTO authDTO = new AuthenticationDTO();
 		authDTO.setUsername(user.getEmail());
 		authDTO.setPassword(user.getPassword());
 		
-		try {
-			//Cria mecanismo de credencial para o Spring
-			UsernamePasswordAuthenticationToken userAuth = 
-					new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword());
-			
-			//Prepara mecamismo para autenticacao
-			Authentication authentication = authenticationManeger.authenticate(userAuth);
-			
-			//Busca usuario logado
-			UserDetailsImpl userAuthenticate = (UserDetailsImpl)authentication.getPrincipal();
-			
-			String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
-			
-			List<String> rolesToList = userAuthenticate.getAuthorities().stream().map(item -> item.getAuthority())
-					.collect(Collectors.toList());
-			
-			AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), rolesToList);
-			
-			return accessDTO;
-			
-		}catch(BadCredentialsException e) {
-			//TODO LOGIN OU SENHA INVALIDO
-		}
-		return null;
+		UserDetailsImpl userAuthenticate = BuscaUser(authDTO);	
 		
+		String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
+		
+		List<String> rolesToList = userAuthenticate.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+		
+		AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), rolesToList);
+		
+		return accessDTO;
 	}
 }

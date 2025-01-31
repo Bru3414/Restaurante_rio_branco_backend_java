@@ -21,7 +21,7 @@ import br.com.RestauranteRioBranco.service.S3Service;
 
 @RestController
 @RequestMapping("/products/images")
-@CrossOrigin(origins =  "http://localhost:3000/")
+@CrossOrigin(origins =  {"http://localhost:3000/", "http://localhost:3001"})
 public class S3Controller {
 	
 	@Autowired

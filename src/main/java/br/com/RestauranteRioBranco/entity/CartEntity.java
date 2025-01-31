@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.com.RestauranteRioBranco.dto.CartDTO;
@@ -18,11 +19,11 @@ public class CartEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonBackReference
 	private CustomerEntity customer;
 	
-	@OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JsonManagedReference
+	@OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductQtdEntity> products;
 	
 	public CartEntity(CartDTO cart) {

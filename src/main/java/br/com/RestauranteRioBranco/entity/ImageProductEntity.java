@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.com.RestauranteRioBranco.dto.ImageProductDTO;
@@ -25,7 +27,7 @@ public class ImageProductEntity {
 	private String url;
 	
 	@OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
-	@JsonManagedReference
+	@JsonIgnore
 	private List<ProductEntity> products;
 	
 	public ImageProductEntity(ImageProductDTO imageProduct) {

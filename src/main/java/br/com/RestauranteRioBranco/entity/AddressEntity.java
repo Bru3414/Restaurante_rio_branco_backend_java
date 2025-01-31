@@ -4,7 +4,11 @@ import java.util.Objects;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import br.com.RestauranteRioBranco.dto.AddressDTO;
+import br.com.RestauranteRioBranco.utils.enums.EBairro;
+import br.com.RestauranteRioBranco.utils.enums.ECity;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,17 +25,20 @@ public class AddressEntity {
 	@Column(nullable = false, length = 6)
 	private String number;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
-	private String bairro;
+	private EBairro bairro;
 	
 	@Column(nullable = false)
 	private String complement;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
-	private String city;
+	private ECity city;
 	
 	@ManyToOne
 	@JoinColumn(name = "customer_id", nullable = false)
+	@JsonBackReference
 	private CustomerEntity customer;
 	
 	public AddressEntity(AddressDTO address) {
@@ -59,11 +66,11 @@ public class AddressEntity {
 		this.number = number;
 	}
 
-	public String getBairro() {
+	public EBairro getBairro() {
 		return bairro;
 	}
 
-	public void setBairro(String bairro) {
+	public void setBairro(EBairro bairro) {
 		this.bairro = bairro;
 	}
 
@@ -75,11 +82,11 @@ public class AddressEntity {
 		this.complement = complement;
 	}
 
-	public String getCity() {
+	public ECity getCity() {
 		return city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(ECity city) {
 		this.city = city;
 	}
 

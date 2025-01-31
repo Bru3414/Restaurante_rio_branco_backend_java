@@ -7,6 +7,8 @@ import org.springframework.beans.BeanUtils;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.UserEntity;
+import br.com.RestauranteRioBranco.utils.enums.EBairro;
+import br.com.RestauranteRioBranco.utils.enums.ECity;
 
 public class AddressDTO {
 	
@@ -16,15 +18,15 @@ public class AddressDTO {
 
 	private String number;
 
-	private String bairro;
+	private EBairro bairro;
 
 	private String complement;
 
-	private String city;
+	private ECity city;
 	
 	private CustomerEntity customer;
 	
-	public AddressDTO(String address, String number, String bairro, String complement, String city,
+	public AddressDTO(String address, String number, EBairro bairro, String complement, ECity city,
 			CustomerEntity customer) {
 		super();
 		this.address = address;
@@ -59,11 +61,11 @@ public class AddressDTO {
 		this.number = number;
 	}
 
-	public String getBairro() {
+	public EBairro getBairro() {
 		return bairro;
 	}
 
-	public void setBairro(String bairro) {
+	public void setBairro(EBairro bairro) {
 		this.bairro = bairro;
 	}
 
@@ -75,11 +77,11 @@ public class AddressDTO {
 		this.complement = complement;
 	}
 
-	public String getCity() {
+	public ECity getCity() {
 		return city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(ECity city) {
 		this.city = city;
 	}
 

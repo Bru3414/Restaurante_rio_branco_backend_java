@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.RestauranteRioBranco.dto.ProductQtdDTO;
 import jakarta.persistence.*;
@@ -24,13 +25,39 @@ public class ProductQtdEntity {
 	@Column(nullable = false, length = 2)
 	private Integer quantity;
 	
+	@Column(nullable = true, length = 100)
+	private String obs;
+	
+	@Column(nullable = false)
+	private Double price;
+	
 	@ManyToOne
 	@JoinColumn(name = "cart_id", nullable = false)
-	@JsonBackReference
+	@JsonIgnore
 	private CartEntity cart;
 	
 	public ProductQtdEntity (ProductQtdDTO product) {
 		BeanUtils.copyProperties(product, this);
+	}
+	
+	public ProductQtdEntity() {
+		
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public String getObs() {
+		return obs;
+	}
+
+	public void setObs(String obs) {
+		this.obs = obs;
 	}
 
 	public Long getId() {
@@ -64,10 +91,20 @@ public class ProductQtdEntity {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+	
+	public void addQtd() {
+		setQuantity(quantity + 1);
+		setPrice(product.getPrice() * quantity);
+	}
+	
+	public void diminuiQtd() {
+		setQuantity(quantity - 1);
+		setPrice(product.getPrice() * quantity);
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(cart, obs, product);
 	}
 
 	@Override
@@ -79,7 +116,8 @@ public class ProductQtdEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		ProductQtdEntity other = (ProductQtdEntity) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(cart, other.cart) && Objects.equals(obs, other.obs)
+				&& Objects.equals(product, other.product);
 	}
 	
 }
