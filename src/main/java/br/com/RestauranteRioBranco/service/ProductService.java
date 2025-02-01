@@ -10,7 +10,9 @@ import br.com.RestauranteRioBranco.dto.ImageProductDTO;
 import br.com.RestauranteRioBranco.dto.ProductDTO;
 import br.com.RestauranteRioBranco.entity.ImageProductEntity;
 import br.com.RestauranteRioBranco.entity.ProductEntity;
+import br.com.RestauranteRioBranco.entity.ProductQtdEntity;
 import br.com.RestauranteRioBranco.repository.ImageProductRepository;
+import br.com.RestauranteRioBranco.repository.ProductQtdRepository;
 import br.com.RestauranteRioBranco.repository.ProductRepository;
 
 @Service
@@ -18,6 +20,9 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
+	
+	@Autowired
+	private ProductQtdRepository productQtdRepository;
 
 	
 	public ProductDTO createProduct(ProductDTO product) {
@@ -29,11 +34,22 @@ public class ProductService {
 	
 	public ProductDTO updadeProduct(ProductDTO product) {
 		ProductEntity productEntity = new ProductEntity(product);
-		return new ProductDTO(productRepository.save(productEntity));
+		List<ProductQtdEntity> listProductsQtd = productQtdRepository.findAllByProduct_Id(product.getId()).get();
+		ProductEntity productEntityDB = (productRepository.save(productEntity));
+		if (listProductsQtd != null) {
+			listProductsQtd.forEach(item -> {item.setPrice(productEntityDB.getPrice() * item.getQuantity());
+												productQtdRepository.save(item);});
+		}
+		return new ProductDTO(productEntityDB);
+		
 	}
 	
 	public void deleteProduct(Long id) {
 		ProductEntity productEntity = productRepository.findById(id).get();
+		List<ProductQtdEntity> listProductsQtd = productQtdRepository.findAllByProduct_Id(productEntity.getId()).get();
+		if (listProductsQtd != null) {
+			listProductsQtd.forEach(item -> productQtdRepository.delete(item));										
+		}
 		productRepository.delete(productEntity);
 	}
 	

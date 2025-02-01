@@ -18,8 +18,8 @@ public class ProductQtdEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne
-	@JoinColumn(name = "product_id")
+	@ManyToOne
+	@JoinColumn(name = "product_id", nullable = false)
 	private ProductEntity product;
 	
 	@Column(nullable = false, length = 2)
