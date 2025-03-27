@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.RestauranteRioBranco.dto.CartDTO;
 import br.com.RestauranteRioBranco.dto.ProductQtdDTO;
+import br.com.RestauranteRioBranco.dto.request.ProductQtdRequest;
 import br.com.RestauranteRioBranco.entity.CartEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.ProductEntity;
@@ -36,32 +37,37 @@ public class CartService {
 	@Autowired
 	private JwtUtils jwtUtils;
 	
-	public CartDTO includeProduct(String token, ProductQtdDTO product) {
+	public CartDTO includeProduct(String token, ProductQtdRequest product) {
 		String jwt = token.replace("Bearer ", "");
 		String email = jwtUtils.getUsernameToken(jwt);
 		CustomerEntity customer = customerRepository.findByUser_Email(email)
 				.orElseThrow(() -> new RuntimeException("Error: Usuário não encontrado"));
-		ProductEntity productEntity = productRepository.findById(product.getProduct().getId())
+		ProductEntity productEntity = productRepository.findById(product.getProductId())
 				.orElseThrow(() -> new RuntimeException("Error: Produto não encontrado"));
 		
 		List<ProductQtdEntity> listProducts = new ArrayList<>();
+		
+		ProductQtdEntity productQtdEntity = new ProductQtdEntity();
+		productQtdEntity.setProduct(productEntity);
+		productQtdEntity.setQuantity(product.getQuantity());
+		productQtdEntity.setId(null);
+		productQtdEntity.setPrice(productEntity.getPrice());
+		productQtdEntity.setObs(product.getObs());
 		
 		
 		if (customer.getCart() == null) {
 			CartEntity cart = new CartEntity();
 			cart.setCustomer(customer);
-			product.setQuantity(1);
-			product.setId(null);
-			product.setPrice(productEntity.getPrice());
-			listProducts.add(new ProductQtdEntity(product));
+			listProducts.add(productQtdEntity);
 			cart.setProducts(listProducts);
 			customer.setCart(cart);
 		} else {
 			listProducts = customer.getCart().getProducts();
+			productQtdEntity.setCart(customer.getCart());
 			
 			Boolean hasInCart = false;
 			for (int i = 0; i < listProducts.size(); i++) {
-				 if (listProducts.get(i).equals(new ProductQtdEntity(product))) {
+				 if (listProducts.get(i).equals(productQtdEntity)) {
 					 customer.getCart().getProducts().get(i).addQtd();
 					 if (customer.getCart().getProducts().get(i).getQuantity() >= 70) {
 						 throw new RuntimeException("Error: Limite máximo de 70 unidades");
@@ -72,10 +78,7 @@ public class CartService {
 			}
 			
 			if (!hasInCart) {
-				product.setQuantity(1);
-				product.setId(null);
-				product.setPrice(productEntity.getPrice());
-				customer.getCart().getProducts().add(new ProductQtdEntity(product));
+				customer.getCart().getProducts().add(productQtdEntity);
 			}
 	
 		}

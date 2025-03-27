@@ -29,6 +29,7 @@ import br.com.RestauranteRioBranco.repository.RoleRepository;
 import br.com.RestauranteRioBranco.repository.UserRepository;
 import br.com.RestauranteRioBranco.security.jwt.JwtUtils;
 import br.com.RestauranteRioBranco.utils.enums.ERole;
+import jakarta.transaction.Transactional;
 
 @Service
 public class AuthService {
@@ -85,6 +86,7 @@ public class AuthService {
 		
 	}
 	
+	@Transactional
 	public AccessDTO signup(UserDTO user, AddressDTO address, String phone) {
 		if (userRepository.existsByEmail(user.getEmail())) {
 			throw new RuntimeException("Error: Email já cadastrado");

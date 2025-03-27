@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.RestauranteRioBranco.dto.CartDTO;
 import br.com.RestauranteRioBranco.dto.ProductQtdDTO;
+import br.com.RestauranteRioBranco.dto.request.ProductQtdRequest;
 import br.com.RestauranteRioBranco.service.CartService;
 
 @RestController
@@ -30,7 +31,7 @@ public class CartController {
 	
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public CartDTO includeProduct(@RequestHeader("Authorization") String token, @RequestBody ProductQtdDTO product) {
+	public CartDTO includeProduct(@RequestHeader("Authorization") String token, @RequestBody ProductQtdRequest product) {
 		return cartService.includeProduct(token, product);
 	}
 	
