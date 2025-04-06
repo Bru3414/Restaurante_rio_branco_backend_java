@@ -26,6 +26,10 @@ public class AddressDTO {
 	
 	private CustomerEntity customer;
 	
+	private Boolean isMain = false;
+	
+	private Boolean isSelected = false;
+	
 	public AddressDTO(String address, String number, EBairro bairro, String complement, ECity city,
 			CustomerEntity customer) {
 		super();
@@ -99,6 +103,22 @@ public class AddressDTO {
 
 	public void setCustomer(CustomerEntity customer) {
 		this.customer = customer;
+	}
+
+	public Boolean getIsMain() {
+		return isMain;
+	}
+
+	public void setIsMain(Boolean isMain) {
+		this.isMain = isMain;
+	}
+
+	public Boolean getIsSelected() {
+		return isSelected;
+	}
+
+	public void setIsSelected(Boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 
 	@Override

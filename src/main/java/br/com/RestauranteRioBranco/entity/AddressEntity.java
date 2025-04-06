@@ -41,6 +41,12 @@ public class AddressEntity {
 	@JsonBackReference
 	private CustomerEntity customer;
 	
+	@Column(nullable = false)
+	private Boolean isMain = false;
+	
+	@Column
+	private Boolean isSelected = false;
+	
 	public AddressEntity(AddressDTO address) {
 		BeanUtils.copyProperties(address, this);
 	}
@@ -104,6 +110,22 @@ public class AddressEntity {
 
 	public void setCustomer(CustomerEntity customer) {
 		this.customer = customer;
+	}
+
+	public Boolean getIsMain() {
+		return isMain;
+	}
+
+	public void setIsMain(Boolean isMain) {
+		this.isMain = isMain;
+	}
+
+	public Boolean getIsSelected() {
+		return isSelected;
+	}
+
+	public void setIsSelected(Boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 
 	@Override
