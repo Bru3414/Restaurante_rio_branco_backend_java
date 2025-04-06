@@ -115,6 +115,8 @@ public class AuthService {
 		customer.setPhone(phone);
 		AddressEntity addressEntity = new AddressEntity(address);
 		addressEntity.setId(null);
+		addressEntity.setIsMain(true);
+		addressEntity.setIsSelected(true);
 		addressEntity.setCustomer(customer);
 		
 		List<AddressEntity> list = new ArrayList<>();
