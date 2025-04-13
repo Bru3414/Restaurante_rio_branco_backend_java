@@ -16,5 +16,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     Integer findLastDailySequence(@Param("date") LocalDate date);
 	
 	List<OrderEntity> findByStatus(EOrderStatus status);
-
+	
+	@Query("SELECT o FROM OrderEntity o WHERE o.status <> :status")
+	List<OrderEntity> findOrdersForOrdersPanel(@Param("status") EOrderStatus status);
 }

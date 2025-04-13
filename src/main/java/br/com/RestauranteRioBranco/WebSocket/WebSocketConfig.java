@@ -25,7 +25,9 @@ import org.springframework.web.socket.sockjs.transport.handler.XhrPollingTranspo
 import br.com.RestauranteRioBranco.security.jwt.JwtHandshakeInterceptor;
 import br.com.RestauranteRioBranco.security.jwt.JwtUtils;
 import br.com.RestauranteRioBranco.service.UserDetailServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -73,8 +75,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
                     accessor.setUser(usernamePasswordAuthenticationToken);
+                    log.info("Usuario conectado: " + accessor.getUser().getName());
                 }
-
+                
+          
                 return message;
             }
 

@@ -1,9 +1,14 @@
 package br.com.RestauranteRioBranco.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +29,19 @@ public class OrderController {
 	@PostMapping("/new-order")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public OrderDTO createOrder(@RequestHeader("Authorization") String token, @RequestBody CreateOrderRequest createOrder) {
-		return orderService.createOrder(token, createOrder.getPayment(), createOrder.getTroco());
+		return orderService.createOrder(token, createOrder.getTypeDelivery(), createOrder.getPayment(), createOrder.getTroco());
+	}
+	
+	@GetMapping("/get-orders-for-orders-panel")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public List<OrderDTO> getOrdersForOrdersPanel() {
+		return orderService.getOrdersForOrdersPanel();
+	}
+	
+	@PutMapping("/handle-order-status")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<Void> handleOrderStatus(@RequestBody OrderDTO order) {
+		orderService.handleOrderStatus(order);
+		return ResponseEntity.ok().build();
 	}
 }
