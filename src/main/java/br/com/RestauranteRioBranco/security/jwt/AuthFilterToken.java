@@ -29,7 +29,11 @@ public class AuthFilterToken extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		
 		try {
-			
+			String path = request.getRequestURI();
+			if (path.startsWith("/ws")) {
+			    filterChain.doFilter(request, response);
+			    return;
+			}
 			String jwt = getToken(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 				String username = jwtUtils.getUsernameToken(jwt);

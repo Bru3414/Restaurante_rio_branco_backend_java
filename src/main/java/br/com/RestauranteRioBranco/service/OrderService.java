@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import br.com.RestauranteRioBranco.controller.OrderWebSocketController;
 import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.OrderDTO;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
@@ -22,7 +24,9 @@ import br.com.RestauranteRioBranco.utils.ProductQtdJsonConverter;
 import br.com.RestauranteRioBranco.utils.enums.EOrderStatus;
 import br.com.RestauranteRioBranco.utils.enums.EPayment;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class OrderService {
 	
@@ -41,10 +45,13 @@ public class OrderService {
 	@Autowired
 	private ProductQtdJsonConverter proJsonConvert;
 	
+	@Autowired
+	private OrderWebSocketController orderWebSocketController;
+	
 	private Double subTotal;
 	
 	@Transactional
-	public OrderDTO createOrder(String token, AddressDTO address, String payment, String troco) {
+	public OrderDTO createOrder(String token, String payment, String troco) {
 		String jwt = token.replace("Bearer ", "");
 		String email = jwtUtils.getUsernameToken(jwt);
 		CustomerEntity customer = customerRepository.findByUser_Email(email)
@@ -66,7 +73,7 @@ public class OrderService {
 		subTotal = 0.0;
 		listProductsQtd.forEach(item -> subTotal += item.getPrice());
 		
-		AddressEntity addressEntity = new AddressEntity(address);
+		AddressEntity addressEntity = customer.getAddress().stream().filter((item) -> item.getIsSelected().equals(true)).toList().get(0);
 		
 		
 		OrderDTO orderDTO = new OrderDTO(nOrder, dateTime, EOrderStatus.AGUARDANDO_APROVACAO,
@@ -76,7 +83,7 @@ public class OrderService {
 		
 		List<ProductQtdEntity> productsCopy = orderDTO.getProductsQtdJson()
 			    .stream()
-			    .map(original -> original) // Criar novos objetos (precisa de um construtor de cópia)
+			    .map(original -> original) 
 			    .collect(Collectors.toList());
 		
 		orderDTO.setProductsQtdJson(productsCopy);
@@ -88,10 +95,27 @@ public class OrderService {
 			return true;
 			});
 		customerRepository.save(customer);
-		//System.out.println("Produtos carregados: " + proJsonConvert.convertToEntityAttribute("\"{\"\"{\\\"\"id\\\"\":57,\\\"\"product\\\"\":{\\\"\"id\\\"\":1,\\\"\"name\\\"\":\\\"\"marmita\\\"\",\\\"\"description\\\"\":\\\"\"arroz, feijão, macarrão, farofa, maionese, 2 tipos de carne (a sua escolha)\\\"\",\\\"\"price\\\"\":20.0,\\\"\"isInMenu\\\"\":true,\\\"\"category\\\"\":\\\"\"MARMITA\\\"\",\\\"\"image\\\"\":{\\\"\"id\\\"\":4,\\\"\"name\\\"\":\\\"\"marmita.png\\\"\",\\\"\"url\\\"\":\\\"\"https://resriobranco-images.s3.sa-east-1.amazonaws.com/marmita.png\\\"\"}},\\\"\"quantity\\\"\":1,\\\"\"obs\\\"\":\\\"\"\\\"\",\\\"\"price\\\"\":20.0}\"\",\"\"{\\\"\"id\\\"\":58,\\\"\"product\\\"\":{\\\"\"id\\\"\":5,\\\"\"name\\\"\":\\\"\"fanta uva lata\\\"\",\\\"\"description\\\"\":\\\"\"fanta uva lata\\\"\",\\\"\"price\\\"\":6.0,\\\"\"isInMenu\\\"\":true,\\\"\"category\\\"\":\\\"\"BEBIDA\\\"\",\\\"\"image\\\"\":{\\\"\"id\\\"\":2,\\\"\"name\\\"\":\\\"\"fanta_uva_lata.png\\\"\",\\\"\"url\\\"\":\\\"\"https://resriobranco-images.s3.sa-east-1.amazonaws.com/fanta_uva_lata.png\\\"\"}},\\\"\"quantity\\\"\":2,\\\"\"obs\\\"\":\\\"\"\\\"\",\\\"\"price\\\"\":12.0}\"\"}\""));
-		
-		System.out.println("Produtos orderEntity: " + orderDTO.getProductsQtdJson());
+		orderWebSocketController.notifyNewOrder(orderDTO);
 		return new OrderDTO(orderRepository.findById(orderEntity.getId()).get());
+	}
+	
+	@Scheduled(fixedRate = 60000)
+	public void CancelOrdersNotApproved() {
+		log.info("Verificando pedidos não aprovados para cancelamento automático...");
+		LocalDateTime limit = LocalDateTime.now().minusMinutes(12);
+		
+		List<OrderEntity> pedidosPendentes = 
+				orderRepository.findByStatus(EOrderStatus.AGUARDANDO_APROVACAO)
+				.stream().filter((item) -> item.getDateTime().isBefore(limit)).toList();
+		
+		for (OrderEntity pedido : pedidosPendentes) {
+            pedido.setStatus(EOrderStatus.CANCELADO);
+        }
+		orderRepository.saveAll(pedidosPendentes);
+		for (OrderEntity pedido : pedidosPendentes) {
+            pedido.setStatus(EOrderStatus.CANCELADO);
+            log.info("⏱️ Pedido " + pedido.getId() + " cancelado automaticamente.");
+        }
 	}
 
 }

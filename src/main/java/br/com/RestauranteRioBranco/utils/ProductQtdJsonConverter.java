@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.RestauranteRioBranco.entity.ProductQtdEntity;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Converter
 @Component
 public class ProductQtdJsonConverter implements AttributeConverter<List<ProductQtdEntity>, String> {
@@ -37,15 +39,13 @@ public class ProductQtdJsonConverter implements AttributeConverter<List<ProductQ
 	        }
 
 	        try {
-	        	products = products.replaceAll("\"\"","\"");
-	            System.out.println("Convertendo JSON para lista: " + products);
 	            ObjectMapper objectMapper = new ObjectMapper();
 	            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	            
 	            List<ProductQtdEntity> produtos = objectMapper.readValue(products, new TypeReference<List<ProductQtdEntity>>() {});
-	            System.out.println("Conversão bem-sucedida: " + produtos);
 	            return produtos;
 	        } catch (JsonProcessingException e) {
+	        	log.error("Erro ao converter JSON para lista de ProductQtd: " + e.getMessage(), e);
 	            throw new RuntimeException("Erro ao converter JSON para lista de ProductQtd: " + e.getMessage(), e);
 	        }
 	    }

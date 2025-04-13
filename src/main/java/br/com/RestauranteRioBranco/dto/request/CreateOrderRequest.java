@@ -1,22 +1,11 @@
 package br.com.RestauranteRioBranco.dto.request;
 
-import br.com.RestauranteRioBranco.dto.AddressDTO;
 
 public class CreateOrderRequest {
-	
-	private AddressDTO address;
-	
+
 	private String payment;
 	
 	private String troco;
-
-	public AddressDTO getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressDTO address) {
-		this.address = address;
-	}
 
 	public String getPayment() {
 		return payment;
