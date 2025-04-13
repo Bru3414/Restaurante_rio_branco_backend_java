@@ -30,7 +30,9 @@ import br.com.RestauranteRioBranco.repository.UserRepository;
 import br.com.RestauranteRioBranco.security.jwt.JwtUtils;
 import br.com.RestauranteRioBranco.utils.enums.ERole;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class AuthService {
 	
@@ -82,6 +84,7 @@ public class AuthService {
 		
 		AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), roles);
 		
+		log.info("Acesso autorizado, email cliente: " + accessDTO.getEmail());
 		return accessDTO;
 		
 	}
@@ -141,6 +144,7 @@ public class AuthService {
 		
 		AccessDTO accessDTO = new AccessDTO(token, userAuthenticate.getId(), userAuthenticate.getName(), userAuthenticate.getEmail(), rolesToList);
 		
+		log.info("Usuário criado com sucesso: " + accessDTO.getEmail());
 		return accessDTO;
 	}
 }

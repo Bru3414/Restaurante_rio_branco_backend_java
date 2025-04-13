@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.request.CreateAddressRequest;
+import br.com.RestauranteRioBranco.dto.response.AddressSelectedResponse;
 import br.com.RestauranteRioBranco.service.AddressService;
 
 @RestController
@@ -36,10 +37,8 @@ public class AddressController {
 	}
 	
 	@PutMapping("/set-selected/{id}")
-	public ResponseEntity<Void> updateAddressSelected(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
-		addressService.updateAddressSelected(token, id);
-		
-		return ResponseEntity.ok().build();
+	public AddressSelectedResponse updateAddressSelected(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
+		return addressService.updateAddressSelected(token, id);
 	}
 	
 	@PostMapping("/create-new-address")

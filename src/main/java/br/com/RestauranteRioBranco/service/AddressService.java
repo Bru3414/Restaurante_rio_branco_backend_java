@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.request.CreateAddressRequest;
+import br.com.RestauranteRioBranco.dto.response.AddressSelectedResponse;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.repository.AddressRepository;
@@ -37,20 +38,24 @@ public class AddressService {
 		return customer.getAddress().stream().map(AddressDTO::new).toList();
 	}
 	
-	public void updateAddressSelected(String token, Long id) {
+	public AddressSelectedResponse updateAddressSelected(String token, Long id) {
 		String jwt = token.replace("Bearer", "");
 		String email = jwtUtils.getUsernameToken(jwt);
 		CustomerEntity customer = customerRepository.findByUser_Email(email)
 				.orElseThrow(() -> new RuntimeException("Error: Usuário não encontrado"));
 		
+		AddressSelectedResponse addressSelected = new AddressSelectedResponse();
+		
 		customer.getAddress().forEach((item) -> item.setIsSelected(false));
 		customer.getAddress().forEach((item) -> {
 			if (item.getId().equals(id)) {
 				item.setIsSelected(true);
+				addressSelected.setAddressSelectedResponse(item);
 			}
 		});
 		
 		customerRepository.save(customer);
+		return addressSelected;
 	}
 	
 	public void createAddress(String token, CreateAddressRequest addressRequest) {

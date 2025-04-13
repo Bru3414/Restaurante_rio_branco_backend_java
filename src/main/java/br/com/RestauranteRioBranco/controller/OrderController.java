@@ -24,6 +24,6 @@ public class OrderController {
 	@PostMapping("/new-order")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public OrderDTO createOrder(@RequestHeader("Authorization") String token, @RequestBody CreateOrderRequest createOrder) {
-		return orderService.createOrder(token, createOrder.getAddress(), createOrder.getPayment(), createOrder.getTroco());
+		return orderService.createOrder(token, createOrder.getPayment(), createOrder.getTroco());
 	}
 }
