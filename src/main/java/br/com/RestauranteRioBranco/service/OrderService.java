@@ -16,9 +16,11 @@ import br.com.RestauranteRioBranco.entity.AddressEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.OrderEntity;
 import br.com.RestauranteRioBranco.entity.ProductQtdEntity;
+import br.com.RestauranteRioBranco.entity.UserEntity;
 import br.com.RestauranteRioBranco.repository.CustomerRepository;
 import br.com.RestauranteRioBranco.repository.OrderRepository;
 import br.com.RestauranteRioBranco.repository.ProductQtdRepository;
+import br.com.RestauranteRioBranco.repository.UserRepository;
 import br.com.RestauranteRioBranco.security.jwt.JwtUtils;
 import br.com.RestauranteRioBranco.utils.ProductQtdJsonConverter;
 import br.com.RestauranteRioBranco.utils.enums.EOrderStatus;
@@ -29,6 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class OrderService {
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private OrderRepository orderRepository;
@@ -51,7 +56,7 @@ public class OrderService {
 	private Double subTotal;
 	
 	@Transactional
-	public OrderDTO createOrder(String token, String payment, String troco) {
+	public OrderDTO createOrder(String token, String typeDelivery, String payment, String troco) {
 		String jwt = token.replace("Bearer ", "");
 		String email = jwtUtils.getUsernameToken(jwt);
 		CustomerEntity customer = customerRepository.findByUser_Email(email)
@@ -73,13 +78,18 @@ public class OrderService {
 		subTotal = 0.0;
 		listProductsQtd.forEach(item -> subTotal += item.getPrice());
 		
-		AddressEntity addressEntity = customer.getAddress().stream().filter((item) -> item.getIsSelected().equals(true)).toList().get(0);
+		AddressEntity addressEntity = null;
+		Double frete = 0.0;
+		if (typeDelivery.equals("DELIVERY")) {
+			addressEntity = customer.getAddress().stream().filter((item) -> item.getIsSelected().equals(true)).toList().get(0);	
+			frete = 7.0;
+		}
 		
 		
 		OrderDTO orderDTO = new OrderDTO(nOrder, dateTime, EOrderStatus.AGUARDANDO_APROVACAO,
 				customer.getId(), customer.getUser().getName(),
 				listProductsQtd, addressEntity,
-				tipoPayment, troco, subTotal, 7.0, subTotal+7);
+				tipoPayment, troco, subTotal, frete, subTotal+frete);
 		
 		List<ProductQtdEntity> productsCopy = orderDTO.getProductsQtdJson()
 			    .stream()
@@ -99,10 +109,42 @@ public class OrderService {
 		return new OrderDTO(orderRepository.findById(orderEntity.getId()).get());
 	}
 	
+	public List<OrderDTO> getOrdersForOrdersPanel() {
+		List<OrderEntity> ordersForOrdersPanel = orderRepository.findOrdersForOrdersPanel(EOrderStatus.CANCELADO);
+		
+		return ordersForOrdersPanel.stream().map(OrderDTO::new).toList();
+	}
+	
+	public void handleOrderStatus(OrderDTO order) {
+		OrderEntity orderEntity = orderRepository.findById(order.getId())
+				.orElseThrow(() -> new RuntimeException("Error: Pedido não encontrado"));
+		
+		switch (orderEntity.getStatus()) {
+			case AGUARDANDO_APROVACAO: {
+				orderEntity.setStatus(EOrderStatus.PRODUCAO);
+				break;
+			}
+			case PRODUCAO: {
+				orderEntity.setStatus(EOrderStatus.PRONTO);
+				break;
+			}
+			case PRONTO: {
+				orderEntity.setStatus(EOrderStatus.FINALIZADO);
+				break;
+			}
+			default: {
+				new RuntimeException("Error: Pedido finalizado ou cancelado");
+			}
+		}
+		
+		orderWebSocketController.notifyHandleOrderStatus(new OrderDTO(orderRepository.save(orderEntity)));
+		
+	}
+	
 	@Scheduled(fixedRate = 60000)
 	public void CancelOrdersNotApproved() {
 		log.info("Verificando pedidos não aprovados para cancelamento automático...");
-		LocalDateTime limit = LocalDateTime.now().minusMinutes(12);
+		LocalDateTime limit = LocalDateTime.now().minusMinutes(15);
 		
 		List<OrderEntity> pedidosPendentes = 
 				orderRepository.findByStatus(EOrderStatus.AGUARDANDO_APROVACAO)
@@ -115,6 +157,7 @@ public class OrderService {
 		for (OrderEntity pedido : pedidosPendentes) {
             pedido.setStatus(EOrderStatus.CANCELADO);
             log.info("⏱️ Pedido " + pedido.getId() + " cancelado automaticamente.");
+            orderWebSocketController.notifyCancelOrder(new OrderDTO(pedido));
         }
 	}
 

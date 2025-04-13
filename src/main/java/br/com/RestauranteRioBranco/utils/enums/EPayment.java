@@ -7,7 +7,8 @@ public enum EPayment {
 	
 	DINHEIRO,
 	CARTAO,
-	PIX;
+	PIX,
+	LOCAL;
 	
 	public static EPayment fromString(String value) {
         if (value == null) {
