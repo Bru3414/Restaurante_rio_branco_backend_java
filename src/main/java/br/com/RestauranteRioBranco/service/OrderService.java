@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import br.com.RestauranteRioBranco.controller.OrderWebSocketController;
 import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.OrderDTO;
+import br.com.RestauranteRioBranco.dto.request.FilterOrderRequest;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.OrderEntity;
 import br.com.RestauranteRioBranco.entity.ProductQtdEntity;
 import br.com.RestauranteRioBranco.entity.UserEntity;
+import br.com.RestauranteRioBranco.entity.specifications.OrderSpecifications;
 import br.com.RestauranteRioBranco.repository.CustomerRepository;
 import br.com.RestauranteRioBranco.repository.OrderRepository;
 import br.com.RestauranteRioBranco.repository.ProductQtdRepository;
@@ -139,6 +141,12 @@ public class OrderService {
 		
 		orderWebSocketController.notifyHandleOrderStatus(new OrderDTO(orderRepository.save(orderEntity)));
 		
+	}
+	
+	public List<OrderDTO> getOrdersByFilter(FilterOrderRequest filter) {
+		log.info("Iniciando busca de pedidos com base no filtro...");
+	
+	    return orderRepository.findAll(OrderSpecifications.withFilters(filter)).stream().map(OrderDTO::new).toList();
 	}
 	
 	@Scheduled(fixedRate = 60000)

@@ -35,10 +35,10 @@ public class OrderEntity {
 	private Long customer_id;
 	
 	@Column(nullable = false, updatable = false)
-	private String customer_name;
+	private String customerName;
 	
 	@Convert(converter = ProductQtdJsonConverter.class)
-	@Basic(fetch = FetchType.EAGER) // FORÇA O CARREGAMENTO DOS DADOS
+	@Basic(fetch = FetchType.EAGER)
 	@Column(nullable = false, updatable = false, columnDefinition = "TEXT")
 	private List<ProductQtdEntity> productsQtdJson;
 	
@@ -70,7 +70,7 @@ public class OrderEntity {
 		this.dateTime = dateTime;
 		this.status = status;
 		this.customer_id = customer_id;
-		this.customer_name = customer_name;
+		this.customerName = customer_name;
 		this.productsQtdJson = productsQtdJson;
 		this.addressJson = addressJson;
 		this.payment = payment;
@@ -129,11 +129,11 @@ public class OrderEntity {
 	}
 
 	public String getCustomer_name() {
-		return customer_name;
+		return customerName;
 	}
 
 	public void setCustomer_name(String customer_name) {
-		this.customer_name = customer_name;
+		this.customerName = customer_name;
 	}
 
 	public List<ProductQtdEntity> getProductsQtdJson() {
