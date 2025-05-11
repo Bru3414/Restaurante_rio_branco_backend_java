@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.RestauranteRioBranco.dto.OrderDTO;
 import br.com.RestauranteRioBranco.dto.request.CreateOrderRequest;
 import br.com.RestauranteRioBranco.dto.request.FilterOrderRequest;
+import br.com.RestauranteRioBranco.dto.response.FilterOrderResponse;
 import br.com.RestauranteRioBranco.service.OrderService;
 
 @RestController
@@ -41,7 +42,7 @@ public class OrderController {
 	
 	@PostMapping("/get-orders-filter")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public List<OrderDTO> getOrdersByFilter(@RequestBody FilterOrderRequest filter) {
+	public FilterOrderResponse getOrdersByFilter(@RequestBody FilterOrderRequest filter) {
 		return orderService.getOrdersByFilter(filter);
 	}
 	

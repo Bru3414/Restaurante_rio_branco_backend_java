@@ -13,6 +13,16 @@ public class FilterOrderRequest {
 	private LocalDate finalDate;
 	
 	private EOrderStatus status;
+	
+	private Integer nPage;
+
+	public Integer getnPage() {
+		return nPage;
+	}
+
+	public void setnPage(Integer nPage) {
+		this.nPage = nPage;
+	}
 
 	public String getCustomerName() {
 		return customerName;
