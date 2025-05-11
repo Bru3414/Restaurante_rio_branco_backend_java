@@ -2,10 +2,15 @@ package br.com.RestauranteRioBranco.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +18,7 @@ import br.com.RestauranteRioBranco.controller.OrderWebSocketController;
 import br.com.RestauranteRioBranco.dto.AddressDTO;
 import br.com.RestauranteRioBranco.dto.OrderDTO;
 import br.com.RestauranteRioBranco.dto.request.FilterOrderRequest;
+import br.com.RestauranteRioBranco.dto.response.FilterOrderResponse;
 import br.com.RestauranteRioBranco.entity.AddressEntity;
 import br.com.RestauranteRioBranco.entity.CustomerEntity;
 import br.com.RestauranteRioBranco.entity.OrderEntity;
@@ -143,10 +149,19 @@ public class OrderService {
 		
 	}
 	
-	public List<OrderDTO> getOrdersByFilter(FilterOrderRequest filter) {
+	public FilterOrderResponse getOrdersByFilter(FilterOrderRequest filter) {
 		log.info("Iniciando busca de pedidos com base no filtro...");
 	
-	    return orderRepository.findAll(OrderSpecifications.withFilters(filter)).stream().map(OrderDTO::new).toList();
+		Integer totalPages = (int) Math.ceil(orderRepository.findAll(OrderSpecifications.withFilters(filter)).size() / 10.0);
+		Pageable pageable = PageRequest.of(filter.getnPage() - 1, 10, Sort.by("id").descending());
+		Page<OrderEntity> pagedOrders = orderRepository.findAll(OrderSpecifications.withFilters(filter), pageable);
+		
+		FilterOrderResponse ordersResponse = new FilterOrderResponse(
+				pagedOrders.stream().map(OrderDTO::new).toList(),
+				totalPages,
+				filter.getnPage());
+		return ordersResponse;
+	    
 	}
 	
 	@Scheduled(fixedRate = 60000)
